@@ -1,6 +1,6 @@
 {
   "name": "function-memorizer",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "memorize function results",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -51,7 +51,9 @@
     "typedoc": "^0.13.0",
     "typescript": "^3.1.6"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "ava": {
     "compileEnhancements": false,
     "extensions": [
