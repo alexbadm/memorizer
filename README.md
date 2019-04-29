@@ -1,11 +1,13 @@
-# memorizer
+# function-memorizer
 
 The function wrapper preventing repeated calculations.
+
+Published as npm-package (`npm i function-memorizer`)
 
 ## Usage
 
 ```typescript
-import memorizer from "memorizer";
+import memorizer from "function-memorizer";
 
 function myCalculation(arg1: ISomeObject, arg2: TSomePrimitive): IResult {
   // does some heavy work
@@ -33,7 +35,7 @@ You can use `timeout` option for expiring values for example.
 You can use `limit` options to prevent memory leaks.
 
 ```typescript
-import memorizer from "memorizer";
+import memorizer from "function-memorizer";
 import produceSomeEntity from "../my/module";
 
 const getSomeEntity = memorizer(produceSomeEntity, { timeout: 600 }); // every cache valid only 600 ms

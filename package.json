@@ -1,5 +1,5 @@
 {
-  "name": "memorizer",
+  "name": "function-memorizer",
   "version": "1.0.0",
   "description": "memorize function results",
   "main": "dist/index.js",
