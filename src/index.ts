@@ -1,7 +1,8 @@
+import { LinkedList } from "./linkedList";
+
 interface IMemoValue<T> {
-  inputs: any[];
+  inputs: IArguments;
   output: T;
-  prev: IMemoValue<T> | undefined;
 }
 
 interface IMemorizerOptions {
@@ -45,59 +46,36 @@ function memorizer<TResult>(
   options?: IMemorizerOptions
 ): (...args: any[]) => TResult {
   const argumentsCount = func.length;
-  let memo: IMemoValue<TResult> | undefined;
-  // const limit = options && options.limit || 1000; // todo: implement limiting
+  const list = new LinkedList<IMemoValue<TResult>>(
+    (options && options.limit) || 1000
+  );
+
   const timeout = options && options.timeout;
+  const pop = () => list.pop();
+  const prune = timeout ? () => setTimeout(pop, timeout) : () => null;
 
-  return (...arg: any[]): TResult => {
-    const cached = findValue(memo, arg);
+  // tslint:disable-next-line: only-arrow-functions
+  return function(): TResult {
+    const args = arguments;
+    const cached = list.find(memo => {
+      for (let i = 0; i < argumentsCount; i++) {
+        if (args[i] !== memo.inputs[i]) {
+          return false;
+        }
+      }
+      return true;
+    });
+
     if (cached) {
-      return cached;
+      return cached.output;
     }
 
-    const out = func(...arg);
-    memo = {
-      inputs: arg,
-      output: out,
-      prev: memo
-    };
-    if (timeout) {
-      removeAfter(timeout, memo);
-    }
-    return out;
+    const output = func.apply(null, Array.from(arguments));
+    list.push({ inputs: arguments, output });
+
+    prune();
+    return output;
   };
-
-  function findValue<T>(
-    lvl: IMemoValue<T> | undefined,
-    arg: any[]
-  ): T | undefined {
-    if (!lvl) {
-      return undefined;
-    }
-    for (let i = 0; i < argumentsCount; i++) {
-      if (arg[i] !== lvl.inputs[i]) {
-        return findValue(lvl.prev, arg);
-      }
-    }
-    return lvl.output;
-  }
-
-  function removeAfter(after: number, item: IMemoValue<TResult>): void {
-    setTimeout(() => {
-      if (!memo) {
-        return;
-      }
-      if (memo === item) {
-        memo = undefined;
-        return;
-      }
-      let n: IMemoValue<TResult> = memo;
-      while (n.prev && n.prev !== item) {
-        n = n.prev;
-      }
-      n.prev = undefined;
-    }, after);
-  }
 }
 
 export = memorizer;
